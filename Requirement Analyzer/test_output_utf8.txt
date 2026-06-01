@@ -1,0 +1,26 @@
+﻿Starting verification checks...
+
+--- 1. Testing Security Utilities ---
+Γ£ô Password hashing & verification successful.
+Γ£ô JWT token creation & decoding successful.
+
+--- 2. Testing Sentence Splitting ---
+Γ£ô Sentence boundary parsing successful.
+
+--- 3. Testing Completeness and Ambiguity Logic ---
+Analyzed requirement: 'The user shall export data when authorized to local disk.'
+  - Completeness: 100.0%
+  - Issues: []
+  - Priority: Must Have
+Analyzed requirement: 'Generate a user-friendly report.'
+  - Completeness: 25.0%
+  - Ambiguity Score: 0.25
+  - Issues: ['Ambiguous terms detected: user-friendly', 'Missing structural elements: Actor (Subject), Condition (if/when context), Expected Outcome']
+Γ£ô Completeness weights (25% per component) & ambiguity metrics verified.
+
+--- 4. Testing Duplicates and Conflict Rules ---
+Duplicate check result: [{'requirement_a': 'The system shall allow any user to edit the file.', 'requirement_b': 'The system shall allow users to modify the files.', 'similarity_score': 0.71}]
+Conflict check result: [{'requirement_a': 'The system shall allow users to access files.', 'requirement_b': 'The system shall restrict users from accessing files.', 'conflict_description': 'Detected opposing permissions/constraints (e.g. allow vs restrict).'}]
+Γ£ô Duplicates similarity matching and conflict rules verified.
+
+≡ƒÄë ALL TESTS PASSED SUCCESSFULLY! The core backend architecture is correct and compliant.

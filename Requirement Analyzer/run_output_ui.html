@@ -1,0 +1,134 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Install, Test, and Server Output</title>
+<style>
+body{font-family:Segoe UI,Arial,Helvetica,sans-serif;background:#f4f6f8;color:#111;padding:20px}
+.container{max-width:1100px;margin:auto}
+h1{margin-bottom:10px}
+.section{margin-bottom:24px}
+pre{background:#111827;color:#f8fafc;padding:16px;border-radius:12px;overflow:auto;white-space:pre-wrap;font-family:Consolas,monospace;font-size:13px;line-height:1.5}
+code{background:#e2e8f0;padding:2px 4px;border-radius:4px}
+.open-app-button{display:inline-block;margin-top:12px;padding:10px 18px;background:#2563eb;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;box-shadow:0 4px 12px rgba(37,99,235,0.25)}
+.open-app-button:hover{background:#1d4ed8}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Install, Test, and FastAPI Server Output</h1>
+  <div class="section"><h2>Install Output</h2><pre>﻿Requirement already satisfied: fastapi&gt;=0.100.0 in .\.venv\Lib\site-packages (from -r requirements.txt (line 1)) (0.136.3)
+Requirement already satisfied: uvicorn&gt;=0.22.0 in .\.venv\Lib\site-packages (from -r requirements.txt (line 2)) (0.48.0)
+Requirement already satisfied: sqlalchemy&gt;=2.0.0 in .\.venv\Lib\site-packages (from -r requirements.txt (line 3)) (2.0.50)
+Requirement already satisfied: pydantic&gt;=2.0.0 in .\.venv\Lib\site-packages (from -r requirements.txt (line 4)) (2.13.4)
+Requirement already satisfied: pydantic-settings&gt;=2.0.0 in .\.venv\Lib\site-packages (from -r requirements.txt (line 5)) (2.14.1)
+Requirement already satisfied: passlib&gt;=1.7.4 in .\.venv\Lib\site-packages (from passlib[bcrypt]&gt;=1.7.4-&gt;-r requirements.txt (line 6)) (1.7.4)
+Requirement already satisfied: python-jose&gt;=3.3.0 in .\.venv\Lib\site-packages (from python-jose[cryptography]&gt;=3.3.0-&gt;-r requirements.txt (line 7)) (3.5.0)
+Requirement already satisfied: python-multipart&gt;=0.0.6 in .\.venv\Lib\site-packages (from -r requirements.txt (line 8)) (0.0.29)
+Requirement already satisfied: spacy&gt;=3.5.0 in .\.venv\Lib\site-packages (from -r requirements.txt (line 9)) (3.8.14)
+Requirement already satisfied: openai&gt;=1.0.0 in .\.venv\Lib\site-packages (from -r requirements.txt (line 10)) (2.38.0)
+Requirement already satisfied: pytest&gt;=7.0.0 in .\.venv\Lib\site-packages (from -r requirements.txt (line 11)) (9.0.3)
+Requirement already satisfied: PyPDF2&gt;=3.0.0 in .\.venv\Lib\site-packages (from -r requirements.txt (line 12)) (3.0.1)
+Requirement already satisfied: python-docx&gt;=0.8.11 in .\.venv\Lib\site-packages (from -r requirements.txt (line 13)) (1.2.0)
+Requirement already satisfied: starlette&gt;=0.46.0 in .\.venv\Lib\site-packages (from fastapi&gt;=0.100.0-&gt;-r requirements.txt (line 1)) (1.1.0)
+Requirement already satisfied: typing-extensions&gt;=4.8.0 in .\.venv\Lib\site-packages (from fastapi&gt;=0.100.0-&gt;-r requirements.txt (line 1)) (4.15.0)
+Requirement already satisfied: typing-inspection&gt;=0.4.2 in .\.venv\Lib\site-packages (from fastapi&gt;=0.100.0-&gt;-r requirements.txt (line 1)) (0.4.2)
+Requirement already satisfied: annotated-doc&gt;=0.0.2 in .\.venv\Lib\site-packages (from fastapi&gt;=0.100.0-&gt;-r requirements.txt (line 1)) (0.0.4)
+Requirement already satisfied: click&gt;=7.0 in .\.venv\Lib\site-packages (from uvicorn&gt;=0.22.0-&gt;-r requirements.txt (line 2)) (8.4.1)
+Requirement already satisfied: h11&gt;=0.8 in .\.venv\Lib\site-packages (from uvicorn&gt;=0.22.0-&gt;-r requirements.txt (line 2)) (0.16.0)
+Requirement already satisfied: greenlet&gt;=1 in .\.venv\Lib\site-packages (from sqlalchemy&gt;=2.0.0-&gt;-r requirements.txt (line 3)) (3.5.1)
+Requirement already satisfied: annotated-types&gt;=0.6.0 in .\.venv\Lib\site-packages (from pydantic&gt;=2.0.0-&gt;-r requirements.txt (line 4)) (0.7.0)
+Requirement already satisfied: pydantic-core==2.46.4 in .\.venv\Lib\site-packages (from pydantic&gt;=2.0.0-&gt;-r requirements.txt (line 4)) (2.46.4)
+Requirement already satisfied: python-dotenv&gt;=0.21.0 in .\.venv\Lib\site-packages (from pydantic-settings&gt;=2.0.0-&gt;-r requirements.txt (line 5)) (1.2.2)
+Requirement already satisfied: ecdsa!=0.15 in .\.venv\Lib\site-packages (from python-jose&gt;=3.3.0-&gt;python-jose[cryptography]&gt;=3.3.0-&gt;-r requirements.txt (line 7)) (0.19.2)
+Requirement already satisfied: rsa!=4.1.1,!=4.4,&lt;5.0,&gt;=4.0 in .\.venv\Lib\site-packages (from python-jose&gt;=3.3.0-&gt;python-jose[cryptography]&gt;=3.3.0-&gt;-r requirements.txt (line 7)) (4.9.1)
+Requirement already satisfied: pyasn1&gt;=0.5.0 in .\.venv\Lib\site-packages (from python-jose&gt;=3.3.0-&gt;python-jose[cryptography]&gt;=3.3.0-&gt;-r requirements.txt (line 7)) (0.6.3)
+Requirement already satisfied: spacy-legacy&lt;3.1.0,&gt;=3.0.11 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (3.0.12)
+Requirement already satisfied: spacy-loggers&lt;2.0.0,&gt;=1.0.0 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (1.0.5)
+Requirement already satisfied: murmurhash&lt;1.1.0,&gt;=0.28.0 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (1.0.15)
+Requirement already satisfied: cymem&lt;2.1.0,&gt;=2.0.2 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (2.0.13)
+Requirement already satisfied: preshed&lt;3.1.0,&gt;=3.0.2 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (3.0.13)
+Requirement already satisfied: thinc&lt;8.4.0,&gt;=8.3.12 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (8.3.13)
+Requirement already satisfied: wasabi&lt;1.2.0,&gt;=0.9.1 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (1.1.3)
+Requirement already satisfied: srsly&lt;3.0.0,&gt;=2.5.3 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (2.5.3)
+Requirement already satisfied: catalogue&lt;2.1.0,&gt;=2.0.6 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (2.0.10)
+Requirement already satisfied: weasel&lt;2.0.0,&gt;=1.0.0 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (1.0.0)
+Requirement already satisfied: confection&lt;2.0.0,&gt;=1.3.2 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (1.3.3)
+Requirement already satisfied: typer&lt;1.0.0,&gt;=0.3.0 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (0.25.1)
+Requirement already satisfied: tqdm&lt;5.0.0,&gt;=4.38.0 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (4.67.3)
+Requirement already satisfied: numpy&gt;=1.19.0 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (2.4.6)
+Requirement already satisfied: requests&lt;3.0.0,&gt;=2.13.0 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (2.34.2)
+Requirement already satisfied: jinja2 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (3.1.6)
+Requirement already satisfied: setuptools in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (82.0.1)
+Requirement already satisfied: packaging&gt;=20.0 in .\.venv\Lib\site-packages (from spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (26.2)
+Requirement already satisfied: charset_normalizer&lt;4,&gt;=2 in .\.venv\Lib\site-packages (from requests&lt;3.0.0,&gt;=2.13.0-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (3.4.7)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in .\.venv\Lib\site-packages (from requests&lt;3.0.0,&gt;=2.13.0-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (3.16)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.26 in .\.venv\Lib\site-packages (from requests&lt;3.0.0,&gt;=2.13.0-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (2.7.0)
+Requirement already satisfied: certifi&gt;=2023.5.7 in .\.venv\Lib\site-packages (from requests&lt;3.0.0,&gt;=2.13.0-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (2026.5.20)
+Requirement already satisfied: blis&lt;1.4.0,&gt;=1.3.0 in .\.venv\Lib\site-packages (from thinc&lt;8.4.0,&gt;=8.3.12-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (1.3.3)
+Requirement already satisfied: colorama in .\.venv\Lib\site-packages (from tqdm&lt;5.0.0,&gt;=4.38.0-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (0.4.6)
+Requirement already satisfied: shellingham&gt;=1.3.0 in .\.venv\Lib\site-packages (from typer&lt;1.0.0,&gt;=0.3.0-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (1.5.4)
+Requirement already satisfied: rich&gt;=13.8.0 in .\.venv\Lib\site-packages (from typer&lt;1.0.0,&gt;=0.3.0-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (15.0.0)
+Requirement already satisfied: cloudpathlib&gt;=0.7.0 in .\.venv\Lib\site-packages (from weasel&lt;2.0.0,&gt;=1.0.0-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (0.24.0)
+Requirement already satisfied: smart-open&gt;=5.2.1 in .\.venv\Lib\site-packages (from weasel&lt;2.0.0,&gt;=1.0.0-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (7.6.1)
+Requirement already satisfied: httpx&gt;=0.24.0 in .\.venv\Lib\site-packages (from weasel&lt;2.0.0,&gt;=1.0.0-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (0.28.1)
+Requirement already satisfied: anyio&lt;5,&gt;=3.5.0 in .\.venv\Lib\site-packages (from openai&gt;=1.0.0-&gt;-r requirements.txt (line 10)) (4.13.0)
+Requirement already satisfied: distro&lt;2,&gt;=1.7.0 in .\.venv\Lib\site-packages (from openai&gt;=1.0.0-&gt;-r requirements.txt (line 10)) (1.9.0)
+Requirement already satisfied: jiter&lt;1,&gt;=0.10.0 in .\.venv\Lib\site-packages (from openai&gt;=1.0.0-&gt;-r requirements.txt (line 10)) (0.15.0)
+Requirement already satisfied: sniffio in .\.venv\Lib\site-packages (from openai&gt;=1.0.0-&gt;-r requirements.txt (line 10)) (1.3.1)
+Requirement already satisfied: httpcore==1.* in .\.venv\Lib\site-packages (from httpx&gt;=0.24.0-&gt;weasel&lt;2.0.0,&gt;=1.0.0-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (1.0.9)
+Requirement already satisfied: iniconfig&gt;=1.0.1 in .\.venv\Lib\site-packages (from pytest&gt;=7.0.0-&gt;-r requirements.txt (line 11)) (2.3.0)
+Requirement already satisfied: pluggy&lt;2,&gt;=1.5 in .\.venv\Lib\site-packages (from pytest&gt;=7.0.0-&gt;-r requirements.txt (line 11)) (1.6.0)
+Requirement already satisfied: pygments&gt;=2.7.2 in .\.venv\Lib\site-packages (from pytest&gt;=7.0.0-&gt;-r requirements.txt (line 11)) (2.20.0)
+Requirement already satisfied: lxml&gt;=3.1.0 in .\.venv\Lib\site-packages (from python-docx&gt;=0.8.11-&gt;-r requirements.txt (line 13)) (6.1.1)
+Requirement already satisfied: six&gt;=1.9.0 in .\.venv\Lib\site-packages (from ecdsa!=0.15-&gt;python-jose&gt;=3.3.0-&gt;python-jose[cryptography]&gt;=3.3.0-&gt;-r requirements.txt (line 7)) (1.17.0)
+Requirement already satisfied: bcrypt&gt;=3.1.0 in .\.venv\Lib\site-packages (from passlib[bcrypt]&gt;=1.7.4-&gt;-r requirements.txt (line 6)) (5.0.0)
+Requirement already satisfied: cryptography&gt;=3.4.0 in .\.venv\Lib\site-packages (from python-jose[cryptography]&gt;=3.3.0-&gt;-r requirements.txt (line 7)) (48.0.0)
+Requirement already satisfied: cffi&gt;=2.0.0 in .\.venv\Lib\site-packages (from cryptography&gt;=3.4.0-&gt;python-jose[cryptography]&gt;=3.3.0-&gt;-r requirements.txt (line 7)) (2.0.0)
+Requirement already satisfied: pycparser in .\.venv\Lib\site-packages (from cffi&gt;=2.0.0-&gt;cryptography&gt;=3.4.0-&gt;python-jose[cryptography]&gt;=3.3.0-&gt;-r requirements.txt (line 7)) (3.0)
+Requirement already satisfied: markdown-it-py&gt;=2.2.0 in .\.venv\Lib\site-packages (from rich&gt;=13.8.0-&gt;typer&lt;1.0.0,&gt;=0.3.0-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (4.2.0)
+Requirement already satisfied: mdurl~=0.1 in .\.venv\Lib\site-packages (from markdown-it-py&gt;=2.2.0-&gt;rich&gt;=13.8.0-&gt;typer&lt;1.0.0,&gt;=0.3.0-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (0.1.2)
+Requirement already satisfied: wrapt in .\.venv\Lib\site-packages (from smart-open&gt;=5.2.1-&gt;weasel&lt;2.0.0,&gt;=1.0.0-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (2.2.1)
+Requirement already satisfied: MarkupSafe&gt;=2.0 in .\.venv\Lib\site-packages (from jinja2-&gt;spacy&gt;=3.5.0-&gt;-r requirements.txt (line 9)) (3.0.3)
+</pre></div>
+  <div class="section"><h2>Test Suite Output</h2><pre>﻿Starting verification checks...
+
+--- 1. Testing Security Utilities ---
+Γ£ô Password hashing &amp; verification successful.
+Γ£ô JWT token creation &amp; decoding successful.
+
+--- 2. Testing Sentence Splitting ---
+Γ£ô Sentence boundary parsing successful.
+
+--- 3. Testing Completeness and Ambiguity Logic ---
+Analyzed requirement: &#x27;The user shall export data when authorized to local disk.&#x27;
+  - Completeness: 100.0%
+  - Issues: []
+  - Priority: Must Have
+Analyzed requirement: &#x27;Generate a user-friendly report.&#x27;
+  - Completeness: 25.0%
+  - Ambiguity Score: 0.25
+  - Issues: [&#x27;Ambiguous terms detected: user-friendly&#x27;, &#x27;Missing structural elements: Actor (Subject), Condition (if/when context), Expected Outcome&#x27;]
+Γ£ô Completeness weights (25% per component) &amp; ambiguity metrics verified.
+
+--- 4. Testing Duplicates and Conflict Rules ---
+Duplicate check result: [{&#x27;requirement_a&#x27;: &#x27;The system shall allow any user to edit the file.&#x27;, &#x27;requirement_b&#x27;: &#x27;The system shall allow users to modify the files.&#x27;, &#x27;similarity_score&#x27;: 0.71}]
+Conflict check result: [{&#x27;requirement_a&#x27;: &#x27;The system shall allow users to access files.&#x27;, &#x27;requirement_b&#x27;: &#x27;The system shall restrict users from accessing files.&#x27;, &#x27;conflict_description&#x27;: &#x27;Detected opposing permissions/constraints (e.g. allow vs restrict).&#x27;}]
+Γ£ô Duplicates similarity matching and conflict rules verified.
+
+≡ƒÄë ALL TESTS PASSED SUCCESSFULLY! The core backend architecture is correct and compliant.
+</pre></div>
+  <div class="section"><h2>Server Startup Log</h2><pre>INFO:     Started server process [10228]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8001 (Press CTRL+C to quit)
+INFO:     127.0.0.1:52972 - &quot;GET / HTTP/1.1&quot; 307 Temporary Redirect
+INFO:     127.0.0.1:52973 - &quot;GET /static/login.html HTTP/1.1&quot; 200 OK
+</pre></div>
+  <div class="section"><h2>Server Access</h2>
+    <p>The app is available at <a href="http://127.0.0.1:8001" target="_blank">http://127.0.0.1:8001</a>.</p>
+    <p>Note: port 8000 was previously occupied, so this instance is running on port 8001.</p>
+    <p><a class="open-app-button" href="http://127.0.0.1:8001" target="_blank">Open app</a></p>
+  </div>
+</div>
+</body>
+</html>

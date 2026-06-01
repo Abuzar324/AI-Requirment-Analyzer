@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Requirement Analyzer – Dashboard</title>
+  <meta name="description" content="AI-powered software requirement quality analysis: detect ambiguity, score completeness, assign MoSCoW priority, and surface conflicts.">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060c1a;
+      --nav-bg: rgba(6,12,26,0.82);
+      --card: rgba(13,20,40,0.72);
+      --card-border: rgba(99,102,241,0.14);
+      --indigo: #6366f1;
+      --violet: #8b5cf6;
+      --teal: #2dd4bf;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+      --emerald: #34d399;
+      --blue: #60a5fa;
+      --text: #f1f5f9;
+      --muted: #64748b;
+      --muted2: #94a3b8;
+      --radius: 20px;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Background blobs */
+    .bg-blobs { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .bb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.12; animation: float 14s ease-in-out infinite alternate; }
+    .bb1 { width:600px; height:600px; background:#6366f1; top:-200px; left:-150px; }
+    .bb2 { width:450px; height:450px; background:#8b5cf6; bottom:-150px; right:-100px; animation-delay:-7s; }
+    .bb3 { width:300px; height:300px; background:#2dd4bf; top:40%; left:60%; opacity:0.08; animation-delay:-4s; }
+    @keyframes float { from{transform:translate(0,0)scale(1)} to{transform:translate(40px,50px)scale(1.12)} }
+
+    /* Grid overlay */
+    body::before {
+      content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+      background-image:linear-gradient(rgba(99,102,241,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,0.03) 1px,transparent 1px);
+      background-size:52px 52px;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 0 28px;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { display:flex; align-items:center; gap:12px; }
+    .nav-logo {
+      width:38px; height:38px; border-radius:10px;
+      background: linear-gradient(135deg,#6366f1,#8b5cf6);
+      display:flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:14px; color:#fff;
+      box-shadow:0 4px 18px rgba(99,102,241,0.4);
+      flex-shrink:0;
+    }
+    .nav-title { font-size:17px; font-weight:700; background:linear-gradient(to right,#fff,#94a3b8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .nav-right { display:flex; align-items:center; gap:18px; }
+    .nav-user { font-size:13px; color:var(--muted2); }
+    .nav-user strong { color:var(--indigo); }
+    .btn-logout {
+      font-size:13px; padding:7px 16px; border-radius:8px;
+      border:1px solid rgba(248,113,113,0.2); background:transparent;
+      color:var(--muted2); cursor:pointer; font-family:'Outfit',sans-serif;
+      transition:all 0.2s;
+    }
+    .btn-logout:hover { border-color:rgba(248,113,113,0.5); background:rgba(248,113,113,0.08); color:#fb7185; }
+
+    /* MAIN */
+    main { position:relative; z-index:1; max-width:1280px; margin:0 auto; padding:32px 24px 64px; }
+
+    /* Page header */
+    .page-header { margin-bottom:32px; }
+    .page-header h1 { font-size:28px; font-weight:800; background:linear-gradient(to right,#fff 60%,#6366f1); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .page-header p { color:var(--muted2); font-size:14px; margin-top:6px; }
+
+    /* METRIC CARDS */
+    .metrics-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; margin-bottom:28px; }
+    .metric-card {
+      background:var(--card);
+      border:1px solid var(--card-border);
+      border-radius:var(--radius);
+      padding:24px;
+      position:relative; overflow:hidden;
+      transition:transform 0.25s, box-shadow 0.25s;
+    }
+    .metric-card:hover { transform:translateY(-4px); box-shadow:0 16px 48px rgba(99,102,241,0.15); }
+    .metric-card .glow {
+      position:absolute; right:-20px; bottom:-20px;
+      width:100px; height:100px; border-radius:50%;
+      filter:blur(30px);
+      transition:opacity 0.3s;
+    }
+    .metric-card:hover .glow { opacity:1; }
+    .metric-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted2); }
+    .metric-value { font-size:40px; font-weight:800; margin-top:10px; line-height:1; }
+    .metric-sub { font-size:12px; color:var(--muted); margin-top:6px; }
+
+    /* Metric glow colors */
+    .mc-indigo .glow { background:#6366f1; opacity:0.12; }
+    .mc-emerald .glow { background:#34d399; opacity:0.12; }
+    .mc-amber .glow { background:#fbbf24; opacity:0.12; }
+    .mc-rose .glow { background:#fb7185; opacity:0.12; }
+
+    /* INPUT SECTION */
+    .section {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 32px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .section-glow {
+      position:absolute; inset:0; pointer-events:none;
+      background: linear-gradient(135deg, rgba(99,102,241,0.05) 0%, transparent 60%);
+    }
+    .section h2 { font-size:20px; font-weight:700; margin-bottom:8px; position:relative; z-index:1; }
+    .section .desc { font-size:13px; color:var(--muted2); margin-bottom:22px; position:relative; z-index:1; line-height:1.6; }
+
+    textarea#req-input {
+      width:100%; height:140px;
+      background:rgba(2,6,23,0.7);
+      border:1px solid rgba(99,102,241,0.2);
+      border-radius:16px; padding:16px 20px;
+      color:var(--text); font-family:'Outfit',sans-serif; font-size:14px;
+      resize:vertical; outline:none; line-height:1.65;
+      transition:border-color 0.2s, box-shadow 0.2s;
+      position:relative; z-index:1;
+    }
+    textarea#req-input:focus { border-color:var(--indigo); box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
+    textarea#req-input::placeholder { color:rgba(148,163,184,0.4); }
+
+    .input-footer { display:flex; align-items:center; justify-content:space-between; margin-top:16px; flex-wrap:wrap; gap:12px; position:relative; z-index:1; }
+    .persist-label { display:flex; align-items:center; gap:10px; cursor:pointer; font-size:13px; color:var(--muted2); }
+    .persist-label input[type=checkbox] { accent-color:var(--indigo); width:15px; height:15px; }
+
+    .char-count { font-size:12px; color:var(--muted); }
+    .btns-row { display:flex; gap:10px; }
+
+    .btn-primary {
+      padding:11px 24px; border-radius:12px; border:none; cursor:pointer;
+      background:linear-gradient(135deg,#6366f1,#8b5cf6);
+      color:#fff; font-family:'Outfit',sans-serif; font-size:14px; font-weight:600;
+      box-shadow:0 6px 20px rgba(99,102,241,0.35); transition:all 0.2s;
+      display:flex; align-items:center; gap:8px;
+    }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(99,102,241,0.45); }
+    .btn-primary:active { transform:scale(0.97); }
+    .btn-primary:disabled { opacity:0.55; cursor:not-allowed; transform:none; }
+
+    .btn-secondary {
+      padding:11px 20px; border-radius:12px; cursor:pointer;
+      border:1px solid var(--card-border); background:transparent;
+      color:var(--muted2); font-family:'Outfit',sans-serif; font-size:14px; font-weight:500;
+      transition:all 0.2s;
+    }
+    .btn-secondary:hover { border-color:rgba(99,102,241,0.4); color:#fff; }
+
+    /* Spinner */
+    .spinner { width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.65s linear infinite; display:none; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+
+    /* Progress bar */
+    #progress-bar-wrap { margin-top:16px; display:none; position:relative; z-index:1; }
+    .progress-label { font-size:12px; color:var(--muted2); margin-bottom:6px; }
+    .progress-track { height:4px; background:rgba(99,102,241,0.15); border-radius:99px; overflow:hidden; }
+    .progress-fill { height:100%; background:linear-gradient(to right,#6366f1,#8b5cf6); border-radius:99px; width:0%; transition:width 0.4s ease; animation:progressAnim 2.5s ease infinite; }
+    @keyframes progressAnim { 0%{width:0%}50%{width:75%}100%{width:95%} }
+
+    /* Alert bar */
+    .alert-bar {
+      padding:12px 18px; border-radius:12px; font-size:13px; font-weight:500;
+      margin-bottom:20px; display:none; position:relative; z-index:1;
+    }
+    .alert-error { background:rgba(251,113,133,0.1); border:1px solid rgba(251,113,133,0.25); color:#fb7185; }
+    .alert-success { background:rgba(52,211,153,0.1); border:1px solid rgba(52,211,153,0.25); color:#34d399; }
+    .alert-bar.show { display:block; }
+
+    /* RESULTS TABLE */
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; }
+    thead tr { border-bottom:1px solid rgba(99,102,241,0.15); }
+    th { padding:12px 16px; text-align:left; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.07em; color:var(--muted); white-space:nowrap; }
+    td { padding:14px 16px; font-size:13px; border-bottom:1px solid rgba(99,102,241,0.07); vertical-align:top; }
+    tr:last-child td { border-bottom:none; }
+    tbody tr { transition:background 0.15s; }
+    tbody tr:hover { background:rgba(99,102,241,0.05); }
+    .empty-row td { text-align:center; color:var(--muted); padding:40px; font-size:13px; }
+
+    .req-text { max-width:340px; line-height:1.55; color:#e2e8f0; }
+    .req-sub { font-size:11px; color:var(--muted); margin-top:4px; }
+
+    /* Badges */
+    .badge {
+      display:inline-flex; align-items:center; gap:5px;
+      padding:4px 10px; border-radius:99px; font-size:11px; font-weight:600;
+      border:1px solid transparent; white-space:nowrap;
+    }
+    .badge-fr { background:rgba(45,212,191,0.1); color:#2dd4bf; border-color:rgba(45,212,191,0.25); }
+    .badge-nfr { background:rgba(99,102,241,0.12); color:#818cf8; border-color:rgba(99,102,241,0.3); }
+    .badge-must { background:rgba(251,113,133,0.1); color:#fb7185; border-color:rgba(251,113,133,0.25); }
+    .badge-should { background:rgba(251,191,36,0.1); color:#fbbf24; border-color:rgba(251,191,36,0.25); }
+    .badge-could { background:rgba(96,165,250,0.1); color:#60a5fa; border-color:rgba(96,165,250,0.25); }
+    .badge-wont { background:rgba(100,116,139,0.1); color:#94a3b8; border-color:rgba(100,116,139,0.25); }
+
+    /* Completeness bar */
+    .comp-bar-wrap { display:flex; align-items:center; gap:10px; }
+    .comp-bar-track { flex:1; height:6px; border-radius:99px; background:rgba(99,102,241,0.12); min-width:60px; }
+    .comp-bar-fill { height:100%; border-radius:99px; transition:width 0.6s ease; }
+    .comp-val { font-size:12px; font-weight:600; min-width:32px; }
+    .comp-red .comp-bar-fill { background:linear-gradient(to right,#f87171,#ef4444); }
+    .comp-amber .comp-bar-fill { background:linear-gradient(to right,#fbbf24,#f59e0b); }
+    .comp-green .comp-bar-fill { background:linear-gradient(to right,#34d399,#10b981); }
+
+    /* Detail expand button */
+    .btn-detail {
+      font-size:12px; padding:5px 12px; border-radius:8px; border:1px solid var(--card-border);
+      background:transparent; color:var(--muted2); cursor:pointer; font-family:'Outfit',sans-serif;
+      transition:all 0.2s; white-space:nowrap;
+    }
+    .btn-detail:hover { border-color:var(--indigo); color:#818cf8; background:rgba(99,102,241,0.08); }
+
+    /* EXPANDED DETAIL DRAWER */
+    .detail-row { display:none; }
+    .detail-row.open { display:table-row; }
+    .detail-panel {
+      background:rgba(2,6,23,0.6); border-radius:16px;
+      padding:20px 24px; margin:0 0 4px; border:1px solid rgba(99,102,241,0.1);
+    }
+    .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .detail-section h4 { font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px; }
+    .issue-item { font-size:12px; color:#fca5a5; padding:6px 10px; background:rgba(251,113,133,0.07); border-radius:8px; border-left:3px solid rgba(251,113,133,0.35); margin-bottom:6px; line-height:1.5; }
+    .suggestion-box {
+      font-size:13px; color:#c7d2fe; line-height:1.65;
+      background:rgba(99,102,241,0.08); padding:12px 16px;
+      border-radius:12px; border-left:3px solid rgba(99,102,241,0.35);
+      font-style:italic;
+    }
+    .ambiguity-chip {
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:12px; padding:5px 12px; border-radius:99px;
+      background:rgba(251,191,36,0.1); color:#fbbf24; border:1px solid rgba(251,191,36,0.2);
+    }
+
+    /* CONFLICT SECTION */
+    #conflict-section { display:none; }
+    .conflict-header { display:flex; align-items:center; gap:10px; color:#fb7185; margin-bottom:18px; }
+    .conflict-header svg { flex-shrink:0; }
+    .conflict-card {
+      background:rgba(251,113,133,0.06); border:1px solid rgba(251,113,133,0.18);
+      border-radius:14px; padding:18px 20px; margin-bottom:12px;
+    }
+    .conflict-desc { font-size:13px; color:#fca5a5; margin-bottom:12px; line-height:1.6; }
+    .conflict-pair { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .conflict-req { font-size:12px; color:var(--muted2); background:rgba(2,6,23,0.5); border-radius:10px; padding:10px 14px; line-height:1.5; }
+    .conflict-req span { display:block; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:#fb7185; margin-bottom:4px; }
+
+    /* SUGGESTION CARDS */
+    #suggestion-cards { display:none; margin-top:0; }
+    .suggestion-cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(420px,1fr)); gap:20px; }
+    .sug-card {
+      background:var(--card); border:1px solid var(--card-border); border-radius:20px; padding:24px;
+      transition:transform 0.2s, box-shadow 0.2s;
+    }
+    .sug-card:hover { transform:translateY(-3px); box-shadow:0 12px 36px rgba(99,102,241,0.1); }
+    .sug-card-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:16px; }
+    .sug-original { font-size:13px; color:var(--muted2); line-height:1.55; flex:1; }
+    .sug-rewrite-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.07em; color:#818cf8; margin-bottom:8px; }
+    .sug-rewrite { font-size:13px; color:#c7d2fe; font-style:italic; line-height:1.65; background:rgba(99,102,241,0.08); border-radius:10px; padding:12px 14px; border-left:3px solid rgba(99,102,241,0.35); }
+
+    /* HISTORY SECTION */
+    .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+    .badge-count { font-size:11px; font-weight:600; padding:3px 10px; border-radius:99px; background:rgba(99,102,241,0.15); color:#818cf8; border:1px solid rgba(99,102,241,0.25); }
+
+    /* Toast */
+    #toast {
+      position:fixed; bottom:28px; right:28px; z-index:200;
+      background:rgba(13,20,40,0.95); border:1px solid var(--card-border);
+      color:var(--text); padding:12px 20px; border-radius:14px;
+      font-size:13px; font-weight:500;
+      box-shadow:0 8px 32px rgba(0,0,0,0.4); backdrop-filter:blur(16px);
+      transform:translateY(80px); opacity:0;
+      transition:transform 0.35s ease, opacity 0.35s ease;
+    }
+    #toast.show { transform:translateY(0); opacity:1; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width:6px; height:6px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:rgba(99,102,241,0.3); border-radius:99px; }
+
+    /* Responsive */
+    @media(max-width:640px) {
+      nav { padding:0 16px; }
+      main { padding:24px 16px 48px; }
+      .section { padding:22px 18px; }
+      .detail-grid { grid-template-columns:1fr; }
+      .conflict-pair { grid-template-columns:1fr; }
+      .suggestion-cards-grid { grid-template-columns:1fr; }
+      .metric-value { font-size:32px; }
+      .nav-user { display:none; }
+    }
+  </style>
+</head>
+<body>
+<div class="bg-blobs"><div class="bb bb1"></div><div class="bb bb2"></div><div class="bb bb3"></div></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">AR</div>
+    <span class="nav-title">AI Requirement Analyzer</span>
+  </div>
+  <div class="nav-right">
+    <span class="nav-user">Welcome, <strong id="username-display">User</strong></span>
+    <button class="btn-logout" onclick="handleLogout()" id="logout-btn">Logout</button>
+  </div>
+</nav>
+
+<main>
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h1>Requirements Dashboard</h1>
+    <p>Analyze software requirements for quality, completeness, ambiguity, and logical conflicts using AI + NLP.</p>
+  </div>
+
+  <!-- METRIC CARDS -->
+  <div class="metrics-grid">
+    <div class="metric-card mc-indigo">
+      <div class="glow"></div>
+      <div class="metric-label">Total Requirements</div>
+      <div class="metric-value" id="metric-total">—</div>
+      <div class="metric-sub">analyzed this session</div>
+    </div>
+    <div class="metric-card mc-emerald">
+      <div class="glow"></div>
+      <div class="metric-label">Functional / Non-Functional</div>
+      <div class="metric-value">
+        <span id="metric-fr" style="color:var(--emerald)">—</span>
+        <span style="color:var(--muted);font-size:24px;font-weight:400"> / </span>
+        <span id="metric-nfr" style="color:var(--blue)">—</span>
+      </div>
+      <div class="metric-sub">FR vs NFR split</div>
+    </div>
+    <div class="metric-card mc-amber">
+      <div class="glow"></div>
+      <div class="metric-label">Avg Completeness</div>
+      <div class="metric-value" id="metric-completeness" style="color:var(--amber)">—</div>
+      <div class="metric-sub">actor · action · condition · outcome</div>
+    </div>
+    <div class="metric-card mc-rose">
+      <div class="glow"></div>
+      <div class="metric-label">System Risk Score</div>
+      <div class="metric-value" id="metric-risk" style="color:var(--rose)">—</div>
+      <div class="metric-sub">0.0 = low · 1.0 = critical</div>
+    </div>
+  </div>
+
+  <!-- INPUT SECTION -->
+  <div class="section">
+    <div class="section-glow"></div>
+    <h2>Requirement Input Stage</h2>
+    <p class="desc">Enter one or more software requirement statements (one per sentence or line). The analyzer will split, classify, score, and surface issues for each one. Enable <em>"Persist to Dashboard"</em> to save results to the database.</p>
+
+    <div id="main-alert" class="alert-bar alert-error"></div>
+
+    <textarea id="req-input" placeholder="Example:&#10;The system shall encrypt all user passwords using bcrypt before storage.&#10;The application should generate reports quickly when requested by the admin.&#10;The platform must support concurrent access by at least 1000 users at any time."></textarea>
+
+    <div class="file-upload-row">
+      <label for="req-file">Upload requirements document</label>
+      <input type="file" id="req-file" accept=".pdf,.docx,.txt" />
+      <p class="hint-text">Supported formats: PDF, Word .docx, or plain text. If a file is selected, it will be analyzed instead of the text box.</p>
+    </div>
+
+    <div id="progress-bar-wrap">
+      <div class="progress-label">Analyzing requirements…</div>
+      <div class="progress-track"><div class="progress-fill"></div></div>
+    </div>
+
+    <div class="input-footer">
+      <label class="persist-label">
+        <input type="checkbox" id="persist-chk">
+        <span>Persist to Dashboard &amp; History</span>
+      </label>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <span class="char-count" id="char-count">0 characters</span>
+        <div class="btns-row">
+          <button class="btn-secondary" onclick="clearAll()" id="clear-btn">Clear</button>
+          <button class="btn-primary" onclick="runAnalysis()" id="analyze-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636-.707.707M21 12h-1M4 12H3m3.343-5.657-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+            <span id="analyze-btn-text">Analyze Requirements</span>
+            <div class="spinner" id="analyze-spinner"></div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS TABLE -->
+  <div class="section" id="results-section">
+    <div class="section-glow"></div>
+    <div class="section-header">
+      <h2>Detailed Quality Breakdown</h2>
+      <span class="badge-count" id="results-count">0 items</span>
+    </div>
+    <div class="table-wrap">
+      <table id="results-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Requirement Statement</th>
+            <th>Category</th>
+            <th>Completeness</th>
+            <th>Priority</th>
+            <th>Ambiguity</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody id="results-tbody">
+          <tr class="empty-row"><td colspan="7">No analysis yet. Enter requirements above and click <strong>Analyze Requirements</strong>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CONFLICT SECTION -->
+  <div class="section" id="conflict-section">
+    <div class="conflict-header">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <h2 style="color:var(--rose);font-size:18px;">Detected Logic Conflicts</h2>
+    </div>
+    <div id="conflicts-container"></div>
+  </div>
+
+  <!-- SUGGESTION CARDS -->
+  <div class="section" id="suggestion-cards">
+    <div class="section-glow"></div>
+    <div class="section-header">
+      <h2>AI Rewrite Suggestions</h2>
+      <span style="font-size:13px;color:var(--muted2);">Structured "As a… I want… So that…" rewrites</span>
+    </div>
+    <div class="suggestion-cards-grid" id="sug-grid"></div>
+  </div>
+
+</main>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+  const API = window.location.origin || 'http://127.0.0.1:8003';
+  let lastResult = null;
+
+  // ── Auth guard ──────────────────────────────────────────────────
+  function getToken() {
+    const t = localStorage.getItem('access_token');
+    if (!t) {
+      showAlert('Please sign in before analyzing requirements.');
+      window.location.href = '/static/login.html';
+      return null;
+    }
+    return t;
+  }
+
+  // Display username from storage
+  const storedUser = localStorage.getItem('username') || 'User';
+  document.getElementById('username-display').textContent = storedUser;
+
+  // Load dashboard metrics from DB on page load
+  window.addEventListener('DOMContentLoaded', fetchDashboardMetrics);
+
+  // Character counter
+  document.getElementById('req-input').addEventListener('input', function() {
+    document.getElementById('char-count').textContent = this.value.length + ' characters';
+  });
+
+  // ── Helpers ─────────────────────────────────────────────────────
+  function showToast(msg, duration = 3200) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), duration);
+  }
+
+  function showAlert(msg) {
+    const el = document.getElementById('main-alert');
+    el.textContent = msg;
+    el.className = 'alert-bar alert-error show';
+  }
+
+  function clearAlert() {
+    const el = document.getElementById('main-alert');
+    el.className = 'alert-bar alert-error';
+  }
+
+  function setAnalyzing(on) {
+    document.getElementById('analyze-btn').disabled = on;
+    document.getElementById('analyze-btn-text').textContent = on ? 'Analyzing…' : 'Analyze Requirements';
+    document.getElementById('analyze-spinner').style.display = on ? 'inline-block' : 'none';
+    document.getElementById('progress-bar-wrap').style.display = on ? 'block' : 'none';
+    
+    if (!on) {
+      const progressFill = document.querySelector('.progress-fill');
+      const progressLabel = document.querySelector('.progress-label');
+      if (progressFill) {
+        progressFill.style.animation = ''; // restore CSS animation for next runs
+        progressFill.style.width = '0%';
+      }
+      if (progressLabel) {
+        progressLabel.textContent = 'Analyzing requirements…';
+      }
+    }
+  }
+
+  function clearAll() {
+    document.getElementById('req-input').value = '';
+    document.getElementById('char-count').textContent = '0 characters';
+    clearAlert();
+  }
+
+  function handleLogout() {
+    localStorage.clear();
+    window.location.href = '/static/login.html';
+  }
+
+  // ── Badge helpers ────────────────────────────────────────────────
+  function categoryBadge(cat) {
+    if (cat === 'FR') return `<span class="badge badge-fr">FR</span>`;
+    return `<span class="badge badge-nfr">NFR</span>`;
+  }
+
+  function priorityBadge(p) {
+    const map = {
+      'Must Have': 'must', 'Should Have': 'should',
+      'Could Have': 'could', "Won't Have": 'wont'
+    };
+    const cls = map[p] || 'should';
+    return `<span class="badge badge-${cls}">${p}</span>`;
+  }
+
+  function completenessBar(pct) {
+    const cls = pct <= 25 ? 'comp-red' : pct <= 75 ? 'comp-amber' : 'comp-green';
+    const color = pct <= 25 ? '#f87171' : pct <= 75 ? '#fbbf24' : '#34d399';
+    return `
+      <div class="comp-bar-wrap ${cls}">
+        <div class="comp-bar-track"><div class="comp-bar-fill" style="width:${pct}%"></div></div>
+        <span class="comp-val" style="color:${color}">${Math.round(pct)}%</span>
+      </div>`;
+  }
+
+  function ambiguityChip(score) {
+    const pct = Math.round(score * 100);
+    const color = score === 0 ? '#34d399' : score <= 0.25 ? '#fbbf24' : '#fb7185';
+    const label = score === 0 ? 'None' : score <= 0.25 ? 'Low' : score <= 0.5 ? 'Moderate' : 'High';
+    return `<span class="badge" style="background:${color}18;color:${color};border-color:${color}30;">${label} (${pct}%)</span>`;
+  }
+
+  // ── Render results ────────────────────────────────────────────────
+  function renderMetrics(data) {
+    document.getElementById('metric-total').textContent = data.total_count;
+    document.getElementById('metric-fr').textContent = data.fr_count;
+    document.getElementById('metric-nfr').textContent = data.nfr_count;
+    document.getElementById('metric-completeness').textContent = Math.round(data.average_completeness) + '%';
+    document.getElementById('metric-risk').textContent = data.overall_risk_score.toFixed(2);
+  }
+
+  function renderTable(reqs) {
+    const tbody = document.getElementById('results-tbody');
+    document.getElementById('results-count').textContent = reqs.length + ' item' + (reqs.length !== 1 ? 's' : '');
+
+    if (!reqs.length) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No results to display.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = reqs.map((r, i) => {
+      const issues = Array.isArray(r.issues) ? r.issues : [];
+      const issuesHtml = issues.length
+        ? issues.map(iss => `<div class="issue-item">⚠ ${iss}</div>`).join('')
+        : '<div style="font-size:12px;color:var(--emerald);">✓ No issues detected</div>';
+      const sugHtml = r.suggestions
+        ? `<div class="suggestion-box">${r.suggestions}</div>`
+        : '<div style="font-size:12px;color:var(--muted);">No rewrite suggestion available.</div>';
+
+      return `
+      <tr id="row-${i}">
+        <td style="color:var(--muted);font-size:12px;font-weight:600">${i + 1}</td>
+        <td>
+          <div class="req-text">${escHtml(r.text)}</div>
+          ${r.created_at ? `<div class="req-sub">${new Date(r.created_at).toLocaleString()}</div>` : ''}
+        </td>
+        <td>${categoryBadge(r.category)}</td>
+        <td>${completenessBar(r.completeness_pct)}</td>
+        <td>${priorityBadge(r.priority)}</td>
+        <td>${ambiguityChip(r.ambiguity_score)}</td>
+        <td><button class="btn-detail" onclick="toggleDetail(${i})">View ▾</button></td>
+      </tr>
+      <tr class="detail-row" id="detail-${i}">
+        <td colspan="7" style="padding:0 16px 12px;">
+          <div class="detail-panel">
+            <div class="detail-grid">
+              <div class="detail-section">
+                <h4>Issues Found</h4>
+                ${issuesHtml}
+              </div>
+              <div class="detail-section">
+                <h4>AI Rewrite Suggestion</h4>
+                ${sugHtml}
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function toggleDetail(i) {
+    const row = document.getElementById('detail-' + i);
+    const btn = document.querySelector(`#row-${i} .btn-detail`);
+    const open = row.classList.toggle('open');
+    btn.textContent = open ? 'Hide ▴' : 'View ▾';
+  }
+
+  function renderConflicts(conflicts) {
+    const section = document.getElementById('conflict-section');
+    const container = document.getElementById('conflicts-container');
+    if (!conflicts || !conflicts.length) {
+      section.style.display = 'none';
+      return;
+    }
+    section.style.display = 'block';
+    container.innerHTML = conflicts.map(c => `
+      <div class="conflict-card">
+        <div class="conflict-desc">⚡ ${escHtml(c.conflict_description)}</div>
+        <div class="conflict-pair">
+          <div class="conflict-req"><span>Requirement A</span>${escHtml(c.requirement_a)}</div>
+          <div class="conflict-req"><span>Requirement B</span>${escHtml(c.requirement_b)}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderSuggestions(reqs) {
+    const section = document.getElementById('suggestion-cards');
+    const grid = document.getElementById('sug-grid');
+    const withSugg = reqs.filter(r => r.suggestions && r.suggestions.trim());
+    if (!withSugg.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    grid.innerHTML = withSugg.map(r => `
+      <div class="sug-card">
+        <div class="sug-card-header">
+          <div class="sug-original">${escHtml(r.text)}</div>
+          ${categoryBadge(r.category)}
+        </div>
+        <div class="sug-rewrite-label">✦ AI Suggested Rewrite</div>
+        <div class="sug-rewrite">${escHtml(r.suggestions)}</div>
+      </div>`).join('');
+  }
+
+  function escHtml(str) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(str || ''));
+    return div.innerHTML;
+  }
+
+  // ── Fetch dashboard metrics on load ──────────────────────────────
+  async function fetchDashboardMetrics() {
+    const token = getToken();
+    if (!token) return;
+    try {
+      const res = await fetch(`${API}/api/dashboard/metrics`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.status === 401) { handleLogout(); return; }
+      if (!res.ok) return;
+      const data = await res.json();
+      lastResult = data;
+      renderMetrics(data);
+      if (data.total_count > 0) {
+        renderTable(data.requirements);
+        renderConflicts(data.conflicts);
+        renderSuggestions(data.requirements);
+        showToast(`📊 Loaded ${data.total_count} saved requirement(s) from database.`);
+      }
+    } catch (e) {
+      // silent – metrics stay at dash
+    }
+  }
+
+  // ── Run analysis ─────────────────────────────────────────────────
+  async function analyzeFile(file, persist, token) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('persist', persist ? 'true' : 'false');
+
+    const res = await fetch(`${API}/api/analyze/file`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    if (res.status === 401) { handleLogout(); return null; }
+    return res;
+  }
+
+  async function pollTaskStatus(taskId, persist, token) {
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    const maxRetries = 5;
+    let retryCount = 0;
+    
+    while (true) {
+      try {
+        const res = await fetch(`${API}/api/analyze/tasks/${taskId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (res.status === 401) { handleLogout(); return; }
+        
+        if (!res.ok) {
+          throw new Error(`Server returned status ${res.status}`);
+        }
+        
+        const task = await res.json();
+        
+        // Update frontend progress bar
+        const progressFill = document.querySelector('.progress-fill');
+        const progressLabel = document.querySelector('.progress-label');
+        
+        if (progressFill && progressLabel) {
+          // Disable CSS animation temporarily to reflect parsed progress values
+          progressFill.style.animation = 'none';
+          progressFill.style.width = `${task.progress}%`;
+          progressLabel.textContent = `Analyzing requirements… ${Math.round(task.progress)}%`;
+        }
+        
+        if (task.status === 'completed') {
+          // Success! Render results
+          const data = task.result;
+          lastResult = data;
+          renderMetrics(data);
+          renderTable(data.requirements);
+          renderConflicts(data.conflicts);
+          renderSuggestions(data.requirements);
+          
+          const persisted = persist ? ' Results saved to database.' : '';
+          showToast(`✅ Analyzed ${data.total_count} requirement(s) successfully.${persisted}`);
+          
+          // Smooth scroll to results
+          document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          setAnalyzing(false);
+          break;
+        } else if (task.status === 'failed') {
+          // Failed! Display error message
+          showAlert(task.error || 'Requirement analysis failed.');
+          setAnalyzing(false);
+          break;
+        }
+        
+        // Wait 1 second before next poll
+        await delay(1000);
+        retryCount = 0; // Reset consecutive failures on success
+        
+      } catch (err) {
+        retryCount++;
+        if (retryCount >= maxRetries) {
+          showAlert('Lost connection to analysis service. Please try again.');
+          setAnalyzing(false);
+          break;
+        }
+        // Wait longer on error before retry
+        await delay(2000);
+      }
+    }
+  }
+
+  async function runAnalysis() {
+    const token = getToken();
+    if (!token) return;
+
+    const inputText = document.getElementById('req-input').value.trim();
+    const fileInput = document.getElementById('req-file');
+    const persist = document.getElementById('persist-chk').checked;
+
+    clearAlert();
+    setAnalyzing(true);
+
+    let res;
+    try {
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const allowed = /\.(pdf|docx|txt)$/i;
+        if (!allowed.test(file.name)) {
+          showAlert('Unsupported file format. Please upload a PDF, DOCX, or text file.');
+          setAnalyzing(false);
+          return;
+        }
+        res = await analyzeFile(file, persist, token);
+        if (!res) {
+          showAlert('Analysis could not be completed. Please sign in again and try one more time.');
+          setAnalyzing(false);
+          return;
+        }
+      } else {
+        if (!inputText) {
+          showAlert('Please enter at least one requirement statement or upload a supported document.');
+          setAnalyzing(false);
+          return;
+        }
+        res = await fetch(`${API}/api/analyze/text`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ text: inputText, persist })
+        });
+        if (res.status === 401) { handleLogout(); return; }
+      }
+
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseError) {
+        const text = await res.text();
+        showAlert(`Server returned invalid JSON: ${text.slice(0, 200)}`);
+        setAnalyzing(false);
+        return;
+      }
+      if (!res.ok) {
+        showAlert(data.detail || 'Analysis failed. Please try again.');
+        setAnalyzing(false);
+        return;
+      }
+
+      if (data && data.task_id) {
+        // Start polling task status
+        pollTaskStatus(data.task_id, persist, token);
+      } else {
+        showAlert('Unexpected response from server. No analysis task was created.');
+        setAnalyzing(false);
+      }
+    } catch (err) {
+      showAlert('Cannot reach the server. Is the backend running and accessible from this page?');
+      setAnalyzing(false);
+    }
+  }
+</script>
+</body>
+</html>

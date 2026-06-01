@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Requirement Analyzer – Sign In</title>
+  <meta name="description" content="Sign in to AI Requirement Analyzer – your intelligent NLP-powered software requirements quality platform.">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080d1a;
+      --surface: rgba(15, 23, 42, 0.75);
+      --border: rgba(99, 102, 241, 0.18);
+      --indigo: #6366f1;
+      --violet: #8b5cf6;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --danger: #f87171;
+      --success: #34d399;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Animated blobs */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.25;
+      animation: drift 12s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    .blob-1 { width: 520px; height: 520px; background: radial-gradient(circle, #6366f1, #4f46e5); top: -180px; left: -160px; }
+    .blob-2 { width: 420px; height: 420px; background: radial-gradient(circle, #8b5cf6, #7c3aed); bottom: -120px; right: -100px; animation-delay: -5s; }
+    .blob-3 { width: 280px; height: 280px; background: radial-gradient(circle, #06b6d4, #0284c7); top: 50%; left: 55%; animation-delay: -8s; opacity: 0.15; }
+    @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(30px, 40px) scale(1.1); } }
+
+    /* Grid pattern overlay */
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      background-image: linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    .card {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 440px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 40px 40px 44px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 0 80px rgba(99,102,241,0.12), 0 25px 50px rgba(0,0,0,0.5);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .logo-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 16px; color: #fff;
+      box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+    }
+    .logo-text { font-size: 18px; font-weight: 700; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: rgba(15,23,42,0.6);
+      border: 1px solid rgba(99,102,241,0.12);
+      border-radius: 14px;
+      padding: 4px;
+      margin-bottom: 30px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(99,102,241,0.35);
+    }
+
+    .form-panel { display: none; }
+    .form-panel.active { display: block; }
+
+    h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .subtitle { font-size: 13px; color: var(--muted); margin-bottom: 26px; }
+
+    .field { margin-bottom: 18px; }
+    label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    input[type="text"], input[type="email"], input[type="password"] {
+      width: 100%;
+      background: rgba(2,6,23,0.7);
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus {
+      border-color: var(--indigo);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+    }
+    input::placeholder { color: rgba(148,163,184,0.45); }
+
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      box-shadow: 0 6px 24px rgba(99,102,241,0.35);
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(99,102,241,0.45); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .btn-loader {
+      display: none;
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 18px;
+      display: none;
+    }
+    .alert-error { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25); color: var(--danger); }
+    .alert-success { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.25); color: var(--success); }
+    .alert.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="grid-overlay"></div>
+
+  <div class="card">
+    <div class="logo">
+      <div class="logo-icon">AR</div>
+      <span class="logo-text">AI Requirement Analyzer</span>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button id="tab-login" class="tab-btn active" onclick="switchTab('login')" role="tab">Sign In</button>
+      <button id="tab-register" class="tab-btn" onclick="switchTab('register')" role="tab">Create Account</button>
+    </div>
+
+    <!-- LOGIN PANEL -->
+    <div id="panel-login" class="form-panel active">
+      <h2>Welcome back</h2>
+      <p class="subtitle">Sign in to access your requirement analysis dashboard.</p>
+      <div id="login-alert" class="alert alert-error"></div>
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="field">
+          <label for="login-username">Username or Email</label>
+          <input type="text" id="login-username" placeholder="yourname or user@email.com" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn-primary" id="login-btn">
+          <span id="login-btn-text">Sign In</span>
+          <div class="btn-loader" id="login-loader"></div>
+        </button>
+      </form>
+    </div>
+
+    <!-- REGISTER PANEL -->
+    <div id="panel-register" class="form-panel">
+      <h2>Create account</h2>
+      <p class="subtitle">Join and start analyzing your software requirements with AI.</p>
+      <div id="reg-alert" class="alert alert-error"></div>
+      <div id="reg-success" class="alert alert-success"></div>
+      <form id="register-form" onsubmit="handleRegister(event)">
+        <div class="field">
+          <label for="reg-username">Username</label>
+          <input type="text" id="reg-username" placeholder="johndoe" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="reg-email">Email</label>
+          <input type="email" id="reg-email" placeholder="john@example.com" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" placeholder="Create a strong password" autocomplete="new-password" required>
+        </div>
+        <button type="submit" class="btn-primary" id="reg-btn">
+          <span id="reg-btn-text">Create Account</span>
+          <div class="btn-loader" id="reg-loader"></div>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API = window.location.origin;
+
+    // If already logged in, go straight to dashboard
+    if (localStorage.getItem('access_token')) {
+      window.location.href = '/static/index.html';
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      document.getElementById('panel-' + tab).classList.add('active');
+    }
+
+    function setLoading(prefix, loading) {
+      const btn = document.getElementById(prefix + '-btn');
+      const text = document.getElementById(prefix + '-btn-text');
+      const loader = document.getElementById(prefix + '-loader');
+      btn.disabled = loading;
+      text.style.display = loading ? 'none' : 'inline';
+      loader.style.display = loading ? 'block' : 'none';
+    }
+
+    function showAlert(id, msg, type = 'error') {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.className = 'alert alert-' + type + ' show';
+    }
+
+    function hideAlert(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      hideAlert('login-alert');
+      setLoading('login', true);
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value;
+      const body = new URLSearchParams({ username, password });
+      try {
+        const res = await fetch(`${API}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          showAlert('login-alert', data.detail || 'Invalid credentials. Please try again.', 'error');
+        } else {
+          localStorage.setItem('access_token', data.access_token);
+          localStorage.setItem('username', username);
+          window.location.href = '/static/index.html';
+        }
+      } catch (err) {
+        showAlert('login-alert', 'Cannot connect to server. Is it running?', 'error');
+      } finally {
+        setLoading('login', false);
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      hideAlert('reg-alert');
+      hideAlert('reg-success');
+      setLoading('reg', true);
+      const payload = {
+        username: document.getElementById('reg-username').value.trim(),
+        email: document.getElementById('reg-email').value.trim(),
+        password: document.getElementById('reg-password').value
+      };
+      try {
+        const res = await fetch(`${API}/api/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          showAlert('reg-alert', data.detail || 'Registration failed.', 'error');
+        } else {
+          showAlert('reg-success', `Account created! Welcome, ${data.username}. Please sign in.`, 'success');
+          document.getElementById('register-form').reset();
+          setTimeout(() => switchTab('login'), 1800);
+        }
+      } catch (err) {
+        showAlert('reg-alert', 'Cannot connect to server. Is it running?', 'error');
+      } finally {
+        setLoading('reg', false);
+      }
+    }
+  </script>
+</body>
+</html>

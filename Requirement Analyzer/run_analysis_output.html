@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sample Requirement Analysis Output</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 24px; background: #f4f6fb; color: #111; }
+    h1 { color: #1f2937; }
+    pre { background: #fff; border: 1px solid #d2d6dc; padding: 16px; border-radius: 12px; overflow-x: auto; }
+    .section { margin-bottom: 20px; }
+    .badge { display: inline-flex; padding: 4px 12px; border-radius: 999px; background: #e0f2fe; color: #0369a1; font-weight: 600; margin-right: 8px; }
+    a { color: #2563eb; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>Sample Requirement Analysis</h1>
+  <div class="section"><span class="badge">Login status: 200</span><span class="badge">Analysis status: 200</span></div>
+  <div class="section"><h2>Input Requirement</h2><pre>The system shall automatically notify administrators when the server load exceeds 90%.</pre></div>
+  <div class="section"><h2>API Response</h2><pre>{
+  "requirements": [
+    {
+      "id": null,
+      "text": "The system shall automatically notify administrators when the server load exceeds 90%.",
+      "category": "FR",
+      "ambiguity_score": 0.0,
+      "completeness_pct": 75.0,
+      "issues": [
+        "Missing structural elements: Expected Outcome"
+      ],
+      "suggestions": "As a [User], I want to be able to the system shall automatically notify administrators when the server load exceeds 90%. so that [Expected Outcome].",
+      "priority": "Must Have",
+      "created_at": null
+    }
+  ],
+  "total_count": 1,
+  "fr_count": 1,
+  "nfr_count": 0,
+  "average_ambiguity": 0.0,
+  "average_completeness": 75.0,
+  "overall_risk_score": 0.12,
+  "conflicts": []
+}</pre></div>
+  <div class="section"><a href="http://127.0.0.1:8003/static/index.html" target="_blank">Open Analyzer Dashboard</a></div>
+</body>
+</html>

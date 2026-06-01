@@ -1,0 +1,27 @@
+﻿<html><head><meta charset='utf-8'/><title>Test Output UI</title><style>body{font-family:Segoe UI,Arial,Helvetica,sans-serif;background:#f6f8fa;color:#222;padding:18px}pre{background:#0e1012;color:#edf2f7;padding:14px;border-radius:10px;overflow:auto;white-space:pre-wrap;font-family:Consolas,monospace}</style></head><body><div class='container'><h1>Project Test Output</h1><pre>Starting verification checks...
+
+--- 1. Testing Security Utilities ---
+Γ&#163;&#244; Password hashing &amp; verification successful.
+Γ&#163;&#244; JWT token creation &amp; decoding successful.
+
+--- 2. Testing Sentence Splitting ---
+Γ&#163;&#244; Sentence boundary parsing successful.
+
+--- 3. Testing Completeness and Ambiguity Logic ---
+Analyzed requirement: &#39;The user shall export data when authorized to local disk.&#39;
+  - Completeness: 100.0%
+  - Issues: []
+  - Priority: Must Have
+Analyzed requirement: &#39;Generate a user-friendly report.&#39;
+  - Completeness: 25.0%
+  - Ambiguity Score: 0.25
+  - Issues: [&#39;Ambiguous terms detected: user-friendly&#39;, &#39;Missing structural elements: Actor (Subject), Condition (if/when context), Expected Outcome&#39;]
+Γ&#163;&#244; Completeness weights (25% per component) &amp; ambiguity metrics verified.
+
+--- 4. Testing Duplicates and Conflict Rules ---
+Duplicate check result: [{&#39;requirement_a&#39;: &#39;The system shall allow any user to edit the file.&#39;, &#39;requirement_b&#39;: &#39;The system shall allow users to modify the files.&#39;, &#39;similarity_score&#39;: 0.71}]
+Conflict check result: [{&#39;requirement_a&#39;: &#39;The system shall allow users to access files.&#39;, &#39;requirement_b&#39;: &#39;The system shall restrict users from accessing files.&#39;, &#39;conflict_description&#39;: &#39;Detected opposing permissions/constraints (e.g. allow vs restrict).&#39;}]
+Γ&#163;&#244; Duplicates similarity matching and conflict rules verified.
+
+≡ƒ&#196;&#235; ALL TESTS PASSED SUCCESSFULLY! The core backend architecture is correct and compliant.
+</pre></div></body></html>
